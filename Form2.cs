@@ -14,12 +14,13 @@ namespace Sudoku
     {
         private SudokuGame game = new SudokuGame();
         private Random r = new Random();
+
+        DateTime time1, time2;
         public Form2()
         {
             InitializeComponent();
             button1.Click += Button1_Click;
             dataGridView1.Paint += dataGridView1_Paint;
-            comboBox1.SelectedIndexChanged += ComboBox1_SelectedIndexChanged;
             game.ShowClues += game_ShowClues;
             game.ShowSolution += game_ShowSolution;
         }
@@ -33,6 +34,7 @@ namespace Sudoku
         private void Button1_Click(object sender, EventArgs e)
         {
             game.NewGame(r);
+            time1 = DateTime.Now;
         }
 
         private void dataGridView1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
@@ -45,15 +47,15 @@ namespace Sudoku
 
         public void game_ShowClues(int[][] grid)
         {
-            for (int y = 0; y <= 8; y++)
+            for (int y = 0; y <= SudokuGame.maxSize; y++)
             {
                 List<int> cells = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-                for (int c = 1; c <= 9 - (5 - game.Difficulty); c++)
+                for (int c = 1; c <= 9 - (5 - SudokuGame.Difficulty); c++)
                 {
                     int randomNumber = cells[r.Next(0, cells.Count())];
                     cells.Remove(randomNumber);
                 }
-                for (int x = 0; x <= 8; x++)
+                for (int x = 0; x <= SudokuGame.maxSize; x++)
                 {
                     if (cells.Contains(x + 1))
                     {
@@ -73,10 +75,9 @@ namespace Sudoku
 
         public void game_ShowSolution(int[][] grid)
         {
-            bool isError = false;
-            for (int y = 0; y <= 8; y++)
+            for (int y = 0; y <= SudokuGame.maxSize; y++)
             {
-                for (int x = 0; x <= 8; x++)
+                for (int x = 0; x <= SudokuGame.maxSize; x++)
                 {
                     if (dataGridView1.Rows[y].Cells[x].Style.ForeColor == Color.Teal)
                     {
@@ -96,29 +97,46 @@ namespace Sudoku
                     }
                 }
             }
-            for(int i=0; i<=8; i++)
-            {
-                for(int j=0; j<=8; j++)
-                {
-                    if (dataGridView1.Rows[i].Cells[j].Style.ForeColor == Color.Red)
-                        isError = true;
-                }
-            }
-            if (isError)
-                MessageBox.Show("Ви вирішили судоку без помилок!", "Вітаємо!");
         }
         private void Button2_Click(object sender, EventArgs e)
         {
             game.showGridSolution();
+            bool isError = false;
+            for(int i=0; i<=SudokuGame.maxSize; i++)
+            {
+                for(int j=0; j<=SudokuGame.maxSize; j++)
+                {
+                    if (dataGridView1.Rows[i].Cells[j].Style.ForeColor == Color.DarkRed)
+                    {
+                        isError = true;
+                    }
+                }
+            }
+            if (isError)
+            {
+                time2 = DateTime.Now;
+                TimeSpan result = time2 - time1;
+                string minutes = string.Format("{0} хв {1} с", result.Minutes, result.Seconds);
+                MessageBox.Show("Виявлено помилки у вирішенні судоку!\nВитрачений час: " + minutes, "Помилка!");
+
+            }
+            else
+            {
+                time2 = DateTime.Now;
+                TimeSpan result = time2 - time1;
+                string minutes = string.Format("{0} хв {1} с", result.Minutes, result.Seconds);
+                MessageBox.Show("Ви вирішили судоку правильно!\nВитрачений час: " + minutes, "Вітаємо!");
+            }
+                
         }
 
         private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int a = dataGridView1.CurrentRow.Index;
             int b = dataGridView1.CurrentCell.ColumnIndex;
-            for(int i=0; i<=8; i++)
+            for(int i=0; i<= SudokuGame.maxSize; i++)
             {
-                for (int j = 0; j <= 8; j++)
+                for (int j = 0; j <= SudokuGame.maxSize; j++)
                 {
                     dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.FromArgb(30, 30, 30);
                     dataGridView1.Rows[a].Cells[j].Style.BackColor = Color.FromArgb(20, 20, 20);
@@ -132,10 +150,5 @@ namespace Sudoku
             Close();
         }
 
-        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            button1.PerformClick();
-            game.Difficulty = comboBox1.SelectedIndex;
-        }
     }
 }

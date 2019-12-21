@@ -22,23 +22,28 @@ namespace Sudoku
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            game.Difficulty = 0;
+            SudokuGame.Difficulty = 0;
             Form2 form2 = new Form2();
             form2.Show();
         }
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            game.Difficulty = 4;
+            SudokuGame.Difficulty = 1;
             Form2 form2 = new Form2();
             form2.Show();
         }
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            game.Difficulty = 4;
+            SudokuGame.Difficulty = 2;
             Form2 form2 = new Form2();
             form2.Show();
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
