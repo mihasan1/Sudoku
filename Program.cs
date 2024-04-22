@@ -20,3 +20,4 @@ namespace Sudoku
         }
     }
 }
+// привіт
